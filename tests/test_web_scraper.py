@@ -16,6 +16,7 @@ class MockGeminiModel:
 @pytest.fixture
 def web_scraper(mocker):
     """Returns an instance of WebScraper with a mocked Gemini model."""
+    mocker.patch('config.GEMINI_API_KEY', "test_api_key")
     mocker.patch('google.generativeai.GenerativeModel', return_value=MockGeminiModel())
     return WebScraper()
 
