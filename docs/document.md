@@ -1,7 +1,7 @@
 # GIG - greatest idea generation
 ## Complete Technical Documentation & Research Evaluation
 
-**AI-Powered Idea Recommendation System with 27 Integrated Modules**
+**AI-Powered Idea Recommendation System with 28 Integrated Modules**
 
 ---
 
@@ -42,6 +42,7 @@ GIG is a sophisticated AI-powered recommendation system that combines large lang
 - **Blockchain Integrity**: Tamper-proof provenance chain with SHA-256 hashing
 - **Federated Learning**: Privacy-preserving multi-user feedback aggregation
 - **Temporal Memory**: Long-term context storage with embedding evolution tracking
+- **Web Scraping**: Real-world context and novelty scoring using the Gemini API
 
 ### 1.3 System Architecture
 
@@ -291,13 +292,13 @@ Ranking Algorithm: Hybrid (27 modules)
 ┌─────────────────────────────────────────────────────────────────┐
 │                 FEATURE EXTRACTION                              │
 │  ┌────────────┐ ┌────────────┐ ┌────────────┐ ┌──────────┐   │
-│  │ Sentiment  │ │   Trend    │ │    ESG     │ │ Integrity│   │
-│  │  Analysis  │ │  Detection │ │  Scoring   │ │   Hash   │   │
+│  │ Sentiment  │ │   Trend    │ │    ESG     │ │ Web Scraper│   │
+│  │  Analysis  │ │  Detection │ │  Scoring   │ │ (Gemini)   │   │
 │  └────────────┘ └────────────┘ └────────────┘ └──────────┘   │
-│  ┌────────────┐ ┌────────────┐ ┌────────────┐                 │
-│  │ Embedding  │ │ Provenance │ │ Feasibility│                 │
-│  │  (FAISS)   │ │   Score    │ │  Analysis  │                 │
-│  └────────────┘ └────────────┘ └────────────┘                 │
+│  ┌────────────┐ ┌────────────┐ ┌────────────┐ ┌──────────┐   │
+│  │ Embedding  │ │ Provenance │ │ Feasibility│ │ Integrity│   │
+│  │  (FAISS)   │ │   Score    │ │  Analysis  │ │   Hash   │   │
+│  └────────────┘ └────────────┘ └────────────┘ └──────────┘   │
 └────────────────────────┬────────────────────────────────────────┘
                          │
                          ▼
@@ -388,6 +389,7 @@ Ranking Algorithm: Hybrid (27 modules)
     ├─→ [Sentiment: TextBlob/Transformers] → sentiment_score
     ├─→ [Trend: Exponential smoothing] → trend_score
     ├─→ [ESG: Keyword matching] → env/social/gov scores
+    ├─→ [Web Scraper: Gemini API] → web_summary, web_score
     ├─→ [Integrity: SHA-256] → integrity_hash
     ├─→ [Provenance: Author + timestamp] → provenance_score
     └─→ [Embedding: sentence-transformers] → 384-dim vector
@@ -450,7 +452,7 @@ Ranking Algorithm: Hybrid (27 modules)
 | 17 | **MMR Diversity** | Selection | [0, 1] | Maximal Marginal Relevance | Relevance-diversity tradeoff |
 | 18 | **Base Engine** | Orchestration | N/A | Core recommendation logic | Pipeline coordinator |
 
-### 3.2 Advanced Features (9  Modules)
+### 3.2 Advanced Features (10  Modules)
 
 | # | Feature | Type | Range | Description | Algorithm | Innovation |
 |---|---------|------|-------|-------------|-----------|------------|
@@ -463,6 +465,7 @@ Ranking Algorithm: Hybrid (27 modules)
 | 25 | **Ethics Filter** | Compliance | [0, 1] | Pre-screening filter | Regex + keyword matching | Regulatory compliance |
 | 26 | **Twin Generator** | Counterfactual | [0, 1] | Improved idea variants | Feature perturbation | Actionable recommendations |
 | 27 | **Evaluation Dashboard** | Metrics | [0, 1] | Quality assessment | nDCG, Precision, Recall | Research-grade evaluation |
+| 28 | **Web Scraper** | Web | [0, 1] | Real-world context and novelty scoring | Gemini API | Real-time web analysis |
 
 ### 3.3 Feature Importance Analysis
 
@@ -488,31 +491,38 @@ Feature Contribution to Final Score (Average across 1000 ideas):
 
 ### 4.1 Hybrid Ranking Formula
 
-The core ranking algorithm combines 9 weighted components:
+The core ranking algorithm combines 10 weighted components:
 
 ```
-BaseScore = Σ(αᵢ × Componentᵢ)  for i = 1 to 9
+BaseScore = Σ(αᵢ × Componentᵢ)  for i = 1 to 10
 
 Components:
-  1. Elo:          αₑₗₒ × (elo_rating / 1500.0)
-  2. Bayesian:     αᵦₐᵧ × bayesian_mean
-  3. Uncertainty:  αᵤₙc × (1 - bayesian_std)
-  4. Sentiment:    αₛₑₙₜ × ((sentiment + 1) / 2)
-  5. Provenance:   αₚᵣₒᵥ × provenance_score
-  6. Freshness:    αfᵣₑₛₕ × exp(-λ × age_in_days)
-  7. Trend:        αₜᵣₑₙ𝒹 × trend_score
-  8. Causal:       αcₐᵤₛₐₗ × causal_impact
-  9. Serendipity:  αₛₑᵣₑₙ × serendipity_boost
+  1. Web Score:     αₑₗₒ × web_score
+  2. Elo:          αₑₗₒ × (elo_rating / 1500.0)
+  3. Bayesian:     αᵦₐᵧ × bayesian_mean
+  4. Uncertainty:  αᵤₙc × (1 - bayesian_std)
+  5. Sentiment:    αₛₑₙₜ × ((sentiment + 1) / 2)
+  6. Provenance:   αₚᵣₒᵥ × provenance_score
+  7. Freshness:    αfᵣₑₛₕ × exp(-λ × age_in_days)
+  8. Trend:        αₜᵣₑₙ𝒹 × trend_score
+  9. Causal:       αcₐᵤₛₐₗ × causal_impact
+  10. Serendipity: αₛₑᵣₑₙ × serendipity_boost
 
 Default α-weights:
-  αₑₗₒ = 0.15,  αᵦₐᵧ = 0.20,  αᵤₙc = 0.10,  αₛₑₙₜ = 0.12
-  αₚᵣₒᵥ = 0.08,  αfᵣₑₛₕ = 0.10,  αₜᵣₑₙ𝒹 = 0.10,  αcₐᵤₛₐₗ = 0.10
+  α_web = 0.15, αₑₗₒ = 0.10,  αᵦₐᵧ = 0.15,  αᵤₙc = 0.10,  αₛₑₙₜ = 0.10
+  αₚᵣₒᵥ = 0.05,  αfᵣₑₛₕ = 0.10,  αₜᵣₑₙ𝒹 = 0.10,  αcₐᵤₛₐₗ = 0.10
   αₛₑᵣₑₙ = 0.05
 
 Constraints:
   Σαᵢ = 1.0  (normalized weights)
   0.05 ≤ αᵢ ≤ 0.25  (bounded influence)
 ```
+
+### 4.2 Web Scraping Analysis
+
+The web scraping module provides real-world context and a novelty score for each idea. It uses the Gemini API to search the web for the idea's title and then summarizes the findings. The summary includes information about the competitive landscape, market potential, and any existing similar solutions.
+
+The Gemini API is also used to generate a novelty score between 0 and 1, where 1 indicates that the idea is highly novel and promising. This score is then used as a new component in the hybrid ranking formula, providing a valuable signal of the idea's potential for success.
 
 ### 4.2 Enhancement Pipeline
 
@@ -931,6 +941,7 @@ enhanced_engine.py
 ├── core.ethics_filter (InteractiveEthicsFilter)
 ├── core.twin_generator (IdeaTwinGenerator)
 └── core.evaluation (EvaluationDashboard)
+└── core.web_scraper (WebScraper)
 ```
 
 ## Appendix B: Configuration Parameters
@@ -1003,6 +1014,12 @@ Optional: Ollama (for LLM generation)
 **Install Dependencies:**
 ```bash
 pip install -r requirements.txt
+```
+
+**Set Gemini API Key:**
+To use the web scraping feature, you will need to set the `GEMINI_API_KEY` environment variable:
+```bash
+export GEMINI_API_KEY="YOUR_API_KEY"
 ```
 
 ### Run Full End-to-End Evaluation
@@ -1136,6 +1153,25 @@ Remove-Item *.db
 1. Increase weight for `bayesian_mean` in `core/weights.py`
 2. Add domain-specific keywords to prompts
 3. Fine-tune Ollama models on domain data
+
+---
+
+## 12. Unit Testing
+
+The project includes a suite of unit tests to ensure the quality and stability of the codebase. The tests are located in the `tests/` directory and use the `pytest` framework.
+
+### Running the Tests
+To run the tests, execute the following command from the root of the project:
+```bash
+PYTHONPATH=. pytest
+```
+
+### Test Coverage
+The test suite currently covers the following modules:
+- `core/economic_feasibility.py`
+- `core/causal_reasoning.py`
+- `core/blockchain.py`
+- `core/web_scraper.py`
 
 ---
 
