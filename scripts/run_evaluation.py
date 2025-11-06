@@ -18,6 +18,7 @@ if sys.platform == 'win32':
 from enhanced_engine import EnhancedRecommendationEngine
 from datetime import datetime
 import json
+import config
 
 
 def main():
@@ -30,11 +31,11 @@ def main():
     
     # Initialize engine
     print("[STEP 1] Initializing Enhanced Recommendation Engine (27 Modules)...")
-    engine = EnhancedRecommendationEngine(db_path="data/ideas.db", ollama_model="llama3.2:1b")
+    engine = EnhancedRecommendationEngine(db_path=config.DB_PATH, ollama_model=config.OLLAMA_MODEL)
     print("         SUCCESS: All 27 modules loaded\n")
     
     # User prompt
-    user_prompt = "give me hardware based idea for me to control aqi of delhi"
+    user_prompt = config.AQI_PROMPT
     print(f"[STEP 2] User Prompt: \"{user_prompt}\"\n")
     
     # Generate ideas

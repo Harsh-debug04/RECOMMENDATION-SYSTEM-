@@ -18,6 +18,8 @@ from datetime import datetime
 import numpy as np
 
 
+import config
+
 class EnhancedRecommendationEngine(BaseEngine):
     """
     Enhanced recommendation engine with all advanced modules integrated.
@@ -25,7 +27,7 @@ class EnhancedRecommendationEngine(BaseEngine):
     federated learning, blockchain integrity, and more.
     """
     
-    def __init__(self, db_path: str = "data/ideas.db", ollama_model: str = "llama2"):
+    def __init__(self, db_path: str = config.DB_PATH, ollama_model: str = config.OLLAMA_MODEL):
         """
         Initialize enhanced engine with all modules.
         

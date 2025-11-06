@@ -104,8 +104,7 @@ class IntegrityBlockchainLayer:
         try:
             int(safe_idea_hash, 16)
         except ValueError:
-            # Not a valid hash
-            return ""
+            raise ValueError("Invalid hash format")
         
         # Sanitize metadata
         if metadata:

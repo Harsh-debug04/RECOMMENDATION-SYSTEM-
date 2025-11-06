@@ -7,6 +7,7 @@ from enhanced_engine import EnhancedRecommendationEngine
 from datetime import datetime
 import sys
 import os
+import config
 
 
 def print_banner():
@@ -80,42 +81,34 @@ IDEA 2:
         return generate_fallback_ideas(prompt, num_ideas)
 
 
+import re
+
 def parse_ollama_ideas(ollama_text: str, theme: str) -> list:
-    """Parse Ollama response into structured ideas"""
+    """Parse Ollama response into structured ideas using regex for robustness."""
     ideas = []
     
     try:
-        # Split by "IDEA" markers
-        sections = ollama_text.split("IDEA")[1:]  # Skip first empty part
+        # Use regex to find all idea blocks
+        idea_blocks = re.findall(r"IDEA\s*\d+:.*?(?=IDEA\s*\d+:|$)", ollama_text, re.DOTALL)
         
-        for idx, section in enumerate(sections[:5]):  # Max 5 ideas
-            lines = section.strip().split('\n')
+        for block in idea_blocks:
+            title_match = re.search(r"Title:(.*)", block, re.IGNORECASE)
+            description_match = re.search(r"Description:(.*)", block, re.IGNORECASE | re.DOTALL)
+            tags_match = re.search(r"Tags:(.*)", block, re.IGNORECASE)
             
-            title = ""
-            description = ""
-            tags = []
+            title = title_match.group(1).strip() if title_match else ""
+            description = description_match.group(1).strip() if description_match else ""
             
-            for line in lines:
-                line = line.strip()
-                if line.startswith("Title:"):
-                    title = line.replace("Title:", "").strip()
-                elif line.startswith("Description:"):
-                    description = line.replace("Description:", "").strip()
-                elif line.startswith("Tags:"):
-                    tags_text = line.replace("Tags:", "").strip()
-                    tags = [t.strip() for t in tags_text.split(',')]
-            
-            # If description is too short, accumulate next lines
-            if description and len(description) < 50:
-                for line in lines:
-                    if not line.startswith(("Title:", "Description:", "Tags:", "IDEA")):
-                        description += " " + line.strip()
+            if tags_match:
+                tags = [t.strip() for t in tags_match.group(1).split(',')]
+            else:
+                tags = [theme, "innovative", "startup"]
             
             if title and description:
                 ideas.append({
-                    "title": title[:200],  # Limit title length
-                    "description": description[:1000],  # Limit description
-                    "tags": tags[:5] if tags else [theme, "innovative", "startup"],
+                    "title": title[:200],
+                    "description": description[:1000],
+                    "tags": tags[:5],
                     "author": "AI-Generated"
                 })
     
@@ -277,8 +270,8 @@ def main():
     
     try:
         engine = EnhancedRecommendationEngine(
-            db_path="data/ideas.db",
-            ollama_model="llama3.2:1b"  # Using available model
+            db_path=config.DB_PATH,
+            ollama_model=config.OLLAMA_MODEL
         )
         print("   ✅ Engine initialized successfully\n")
     except Exception as e:
@@ -291,13 +284,13 @@ def main():
     else:
         print("💡 No prompt provided. Using default demonstration prompt.")
         print("   Usage: python main.py \"your idea generation prompt\"\n")
-        user_prompt = "sustainable technology for climate change"
+        user_prompt = config.DEFAULT_PROMPT
     
     print(f"🎯 Your Prompt: \"{user_prompt}\"")
     
     try:
         # Step 1: Generate ideas from prompt
-        generated_ideas = generate_ideas_from_prompt(engine, user_prompt, num_ideas=3)
+        generated_ideas = generate_ideas_from_prompt(engine, user_prompt, num_ideas=config.NUM_IDEAS_TO_GENERATE)
         
         if not generated_ideas:
             print("❌ No ideas generated. Exiting.")
@@ -313,7 +306,7 @@ def main():
             # Continue anyway to show existing recommendations
         
         # Step 3: Get recommendations
-        recommendations = get_recommendations(engine, user_prompt, top_k=5)
+        recommendations = get_recommendations(engine, user_prompt, top_k=config.TOP_K_RECOMMENDATIONS)
         
         # Step 4: Display system statistics
         display_system_stats(engine)
