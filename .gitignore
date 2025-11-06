@@ -102,5 +102,5 @@ dmypy.json
 .pytype/
 
 # data files
-# It's not recommended to commit database files to version control
-data/
+# The database schema is managed by a migration script in core/database.py
+# data/

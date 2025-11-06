@@ -58,7 +58,7 @@ class RecommendationEngine:
         self.mmr = MMRDiversityRanker()
     
     def add_idea(self, title: str, description: str, author: str = "system",
-                tags: Optional[List[str]] = None) -> str:
+                tags: Optional[List[str]] = None, web_results: Optional[Dict[str, Any]] = None) -> str:
         """
         Add new idea to system
         
@@ -67,6 +67,7 @@ class RecommendationEngine:
             description: Idea description
             author: Author name
             tags: Optional tags list
+            web_results: Optional web scraping results
             
         Returns:
             Idea ID
@@ -101,7 +102,9 @@ class RecommendationEngine:
             elo_rating=1500.0,
             bayesian_mean=0.5,
             uncertainty=0.3,
-            provenance_score=0.7
+            provenance_score=0.7,
+            web_summary=web_results["summary"] if web_results else "",
+            web_score=web_results["score"] if web_results else 0.5
         )
         
         # Verify it's not adversarial
@@ -171,6 +174,7 @@ class RecommendationEngine:
             
             # Compute components
             components = {
+                "web_score": idea.web_score,
                 "elo": idea.elo_rating / 1500.0,  # Normalize
                 "bayesian_mean": idea.bayesian_mean,
                 "uncertainty": idea.uncertainty,

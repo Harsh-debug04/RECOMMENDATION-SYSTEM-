@@ -7,17 +7,21 @@ DB_PATH = "data/ideas.db"
 BLOCKCHAIN_DB_PATH = "data/blockchain.db"
 TEMPORAL_DB_PATH = "data/temporal_memory.db"
 
+import os
+
 # LLM Configuration
 OLLAMA_MODEL = "llama3.2:1b"
 EMBEDDING_MODEL = "all-MiniLM-L6-v2"
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 
 # Ranking weights
 ALPHA_WEIGHTS = {
-    "elo": 0.15,
-    "bayesian": 0.20,
+    "web_score": 0.15,
+    "elo": 0.10,
+    "bayesian": 0.15,
     "uncertainty": 0.10,
-    "sentiment": 0.12,
-    "provenance": 0.08,
+    "sentiment": 0.10,
+    "provenance": 0.05,
     "freshness": 0.10,
     "trend": 0.10,
     "causal": 0.10,

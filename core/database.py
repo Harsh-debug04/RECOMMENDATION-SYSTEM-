@@ -38,6 +38,8 @@ class Idea:
     uncertainty: float = 0.5
     hash_signature: str = ""
     author: str = "AI-Generated"
+    web_summary: str = ""
+    web_score: float = 0.5
     
     def __post_init__(self):
         if self.timestamp is None:
@@ -94,7 +96,9 @@ class IdeaDatabase:
                 bayesian_mean REAL DEFAULT 0.5,
                 uncertainty REAL DEFAULT 0.5,
                 hash_signature TEXT,
-                author TEXT DEFAULT 'AI-Generated'
+                author TEXT DEFAULT 'AI-Generated',
+                web_summary TEXT,
+                web_score REAL DEFAULT 0.5
             )
         """)
         
@@ -102,6 +106,17 @@ class IdeaDatabase:
         cursor.execute("CREATE INDEX IF NOT EXISTS idx_timestamp ON ideas(timestamp)")
         cursor.execute("CREATE INDEX IF NOT EXISTS idx_hash ON ideas(hash_signature)")
         
+        # Add new columns if they don't exist
+        try:
+            cursor.execute("ALTER TABLE ideas ADD COLUMN web_summary TEXT")
+        except sqlite3.OperationalError:
+            pass  # Column already exists
+
+        try:
+            cursor.execute("ALTER TABLE ideas ADD COLUMN web_score REAL DEFAULT 0.5")
+        except sqlite3.OperationalError:
+            pass # Column already exists
+
         self.conn.commit()
     
     def _generate_hash(self, idea: Idea) -> str:
@@ -147,7 +162,7 @@ class IdeaDatabase:
             idea.hash_signature = self._generate_hash(idea)
             
             cursor.execute("""
-                INSERT INTO ideas VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                INSERT INTO ideas VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """, (
                 idea.idea_id,
                 idea.title,
@@ -163,7 +178,9 @@ class IdeaDatabase:
                 idea.bayesian_mean,
                 idea.uncertainty,
                 idea.hash_signature,
-                idea.author
+                idea.author,
+                idea.web_summary,
+                idea.web_score
             ))
             self.conn.commit()
             
@@ -222,7 +239,9 @@ class IdeaDatabase:
             bayesian_mean=row[11],
             uncertainty=row[12],
             hash_signature=row[13],
-            author=row[14] if len(row) > 14 else "AI-Generated"
+            author=row[14] if len(row) > 14 else "AI-Generated",
+            web_summary=row[15] if len(row) > 15 else "",
+            web_score=row[16] if len(row) > 16 else 0.5
         )
     
     def get_all_ideas(self) -> List[Idea]:

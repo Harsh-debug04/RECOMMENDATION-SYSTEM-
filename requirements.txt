@@ -27,3 +27,4 @@ httpx==0.25.0
 # Windows: winget install Ollama.Ollama
 # macOS: brew install ollama
 # Linux: curl -fsSL https://ollama.ai/install.sh | sh
+google-generativeai==0.3.1

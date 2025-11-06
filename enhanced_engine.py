@@ -12,6 +12,7 @@ from core.blockchain import IntegrityBlockchainLayer
 from core.ethics_filter import InteractiveEthicsFilter
 from core.twin_generator import IdeaTwinGenerator
 from core.evaluation import EvaluationDashboard
+from core.web_scraper import WebScraper
 
 from typing import List, Dict, Any, Optional
 from datetime import datetime
@@ -48,8 +49,9 @@ class EnhancedRecommendationEngine(BaseEngine):
         self.ethics_filter = InteractiveEthicsFilter()
         self.twin_generator = IdeaTwinGenerator()
         self.evaluation_dashboard = EvaluationDashboard()
+        self.web_scraper = WebScraper()
         
-        print("✅ Enhanced Recommendation Engine initialized with 27 modules")
+        print("✅ Enhanced Recommendation Engine initialized with 28 modules")
     
     def add_idea_enhanced(self, title: str, description: str, author: str = "system",
                          tags: Optional[List[str]] = None) -> Dict[str, Any]:
@@ -73,8 +75,11 @@ class EnhancedRecommendationEngine(BaseEngine):
                 "ethics_assessment": ethics_result
             }
         
+        # Web scraping
+        web_results = self.web_scraper.search_and_summarize(title)
+
         # Add idea using base method
-        idea_id = self.add_idea(title, description, author, tags)
+        idea_id = self.add_idea(title, description, author, tags, web_results)
         
         # Check if idea was added (None means duplicate)
         if not idea_id:
