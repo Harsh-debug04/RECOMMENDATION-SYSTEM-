@@ -241,7 +241,8 @@ def display_system_stats(engine):
     
     print("\n📈 DATABASE STATISTICS:")
     print(f"   Total Ideas: {report['base_audit']['total_ideas']}")
-    print(f"   Integrity: {report['base_audit']['integrity']['status']}")
+    if "validity_rate" in report['base_audit']['integrity']:
+        print(f"   Integrity: {report['base_audit']['integrity']['validity_rate']:.2%}")
     print(f"   Bias Detected: {report['base_audit']['bias']['bias_detected']}")
     
     print("\n🔗 BLOCKCHAIN STATUS:")
@@ -255,7 +256,8 @@ def display_system_stats(engine):
     
     print("\n🤝 FEDERATED LEARNING:")
     print(f"   Update Rounds: {report['federated_learning']['update_rounds']}")
-    print(f"   Total Feedbacks: {report['federated_learning']['total_feedbacks']}")
+    if "total_feedbacks" in report['federated_learning']:
+        print(f"   Total Feedbacks: {report['federated_learning']['total_feedbacks']}")
     
     print()
 
