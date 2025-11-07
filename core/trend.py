@@ -36,5 +36,5 @@ class MarketTrendAnalyzer:
                 score += weight
                 matches += 1
         
-        # Return average if matches found, else neutral
-        return min(1.0, score / max(1, matches)) if matches > 0 else 0.5
+        # Return average if matches found, else low
+        return min(1.0, score / max(1, matches)) if matches > 0 else 0.1

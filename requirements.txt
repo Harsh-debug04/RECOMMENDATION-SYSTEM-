@@ -28,3 +28,4 @@ httpx==0.25.0
 # macOS: brew install ollama
 # Linux: curl -fsSL https://ollama.ai/install.sh | sh
 google-generativeai==0.3.1
+beautifulsoup4==4.12.3

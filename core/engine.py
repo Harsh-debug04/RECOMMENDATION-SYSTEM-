@@ -104,7 +104,11 @@ class RecommendationEngine:
             uncertainty=0.3,
             provenance_score=0.7,
             web_summary=web_results["summary"] if web_results else "",
-            web_score=web_results["score"] if web_results else 0.5
+            web_score=web_results["score"] if web_results else 0.5,
+            regulatory_urgency=web_results["regulatory_urgency"] if web_results else 0.0,
+            trend_acceleration_factor=web_results["trend_acceleration_factor"] if web_results else 0.0,
+            market_delta=web_results["market_delta"] if web_results else 0.0,
+            web_signal=web_results["web_signal"] if web_results else 0.5
         )
         
         # Verify it's not adversarial
@@ -174,7 +178,7 @@ class RecommendationEngine:
             
             # Compute components
             components = {
-                "web_score": idea.web_score,
+                "web_signal": idea.web_signal,
                 "elo": idea.elo_rating / 1500.0,  # Normalize
                 "bayesian_mean": idea.bayesian_mean,
                 "uncertainty": idea.uncertainty,

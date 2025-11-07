@@ -16,7 +16,7 @@ GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 
 # Ranking weights
 ALPHA_WEIGHTS = {
-    "web_score": 0.15,
+    "web_signal": 0.20,
     "elo": 0.10,
     "bayesian": 0.15,
     "uncertainty": 0.10,
@@ -24,7 +24,7 @@ ALPHA_WEIGHTS = {
     "provenance": 0.05,
     "freshness": 0.10,
     "trend": 0.10,
-    "causal": 0.10,
+    "causal": 0.05,
     "serendipity": 0.05,
 }
 

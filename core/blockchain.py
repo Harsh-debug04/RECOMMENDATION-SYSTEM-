@@ -82,6 +82,7 @@ class IntegrityBlockchainLayer:
         self.chain.append(genesis_block)
     
     def add_block(self, idea_id: str, idea_hash: str, 
+                  web_hash: Optional[str] = None,
                   metadata: Optional[Dict[str, Any]] = None) -> str:
         """
         Add new block to the chain.
@@ -89,6 +90,7 @@ class IntegrityBlockchainLayer:
         Args:
             idea_id: Idea identifier
             idea_hash: SHA-256 hash of idea content
+            web_hash: SHA-256 hash of external web intelligence data
             metadata: Optional metadata dictionary
             
         Returns:
@@ -122,6 +124,7 @@ class IntegrityBlockchainLayer:
             data={
                 "idea_id": safe_idea_id,
                 "idea_hash": safe_idea_hash,
+                "web_hash": web_hash,
                 "metadata": safe_metadata,
                 "action": "add_idea"
             },

@@ -76,7 +76,7 @@ GIG is a sophisticated AI-powered recommendation system that combines large lang
 **Test Prompt:** `"give me hardware based idea for me to control aqi of delhi"`
 
 **Test Date:** 2025-11-06  
-**System Version:** GIG v1.0 (27 modules)  
+**System Version:** GIG v1.1 (28 modules)
 **Test Status:** ✅ **100% SUCCESS**
 
 ### 2.2 End-to-End Pipeline Results
@@ -489,7 +489,7 @@ Feature Contribution to Final Score (Average across 1000 ideas):
 
 ## 4. Technical Implementation
 
-### 4.1 Hybrid Ranking Formula
+### 4.1 Hybrid Ranking Formula (v1.1)
 
 The core ranking algorithm combines 10 weighted components:
 
@@ -497,7 +497,7 @@ The core ranking algorithm combines 10 weighted components:
 BaseScore = Σ(αᵢ × Componentᵢ)  for i = 1 to 10
 
 Components:
-  1. Web Score:     αₑₗₒ × web_score
+  1. WebSignal:    α_web × web_signal
   2. Elo:          αₑₗₒ × (elo_rating / 1500.0)
   3. Bayesian:     αᵦₐᵧ × bayesian_mean
   4. Uncertainty:  αᵤₙc × (1 - bayesian_std)
@@ -509,8 +509,8 @@ Components:
   10. Serendipity: αₛₑᵣₑₙ × serendipity_boost
 
 Default α-weights:
-  α_web = 0.15, αₑₗₒ = 0.10,  αᵦₐᵧ = 0.15,  αᵤₙc = 0.10,  αₛₑₙₜ = 0.10
-  αₚᵣₒᵥ = 0.05,  αfᵣₑₛₕ = 0.10,  αₜᵣₑₙ𝒹 = 0.10,  αcₐᵤₛₐₗ = 0.10
+  α_web = 0.20, αₑₗₒ = 0.10,  αᵦₐᵧ = 0.15,  αᵤₙc = 0.10,  αₛₑₙₜ = 0.10
+  αₚᵣₒᵥ = 0.05,  αfᵣₑₛₕ = 0.10,  αₜᵣₑₙ𝒹 = 0.10,  αcₐᵤₛₐₗ = 0.05
   αₛₑᵣₑₙ = 0.05
 
 Constraints:
@@ -518,11 +518,15 @@ Constraints:
   0.05 ≤ αᵢ ≤ 0.25  (bounded influence)
 ```
 
-### 4.2 Web Scraping Analysis
+### 4.2 Web Scraping & External Intelligence (v1.1)
 
 The web scraping module provides real-world context and a novelty score for each idea. It uses the Gemini API to search the web for the idea's title and then summarizes the findings. The summary includes information about the competitive landscape, market potential, and any existing similar solutions.
 
-The Gemini API is also used to generate a novelty score between 0 and 1, where 1 indicates that the idea is highly novel and promising. This score is then used as a new component in the hybrid ranking formula, providing a valuable signal of the idea's potential for success.
+The Gemini API is also used to generate a novelty score between 0 and 1, where 1 indicates that the idea is highly novel and promising.
+
+In addition to the novelty score, the module also scrapes whitelisted public sources (like regulatory bulletins, news feeds, and market data) to extract structured signals. These signals are processed to create sub-features like `RegulatoryUrgency`, `TrendAccelerationFactor (TAF)`, and `MarketDelta`.
+
+These signals are then combined into a `WebSignal` composite score, which is added to the main ranking formula to make recommendations more relevant and timely.
 
 ### 4.2 Enhancement Pipeline
 
@@ -633,7 +637,7 @@ global_weights = mean(sorted_weights[10%:-10%])
   where D and D' differ by one user's data
 ```
 
-### 4.6 Blockchain Integrity Structure
+### 4.6 Blockchain Integrity Structure (v1.1 Dual-Hash System)
 
 **Tamper-Proof Provenance Chain:**
 
@@ -642,7 +646,7 @@ class Block:
     def __init__(self, index, timestamp, data, previous_hash):
         self.index = index
         self.timestamp = timestamp
-        self.data = data  # {idea_id, hash, metadata}
+        self.data = data  # {idea_id, idea_hash, web_hash, metadata}
         self.previous_hash = previous_hash
         self.hash = self.calculate_hash()
     

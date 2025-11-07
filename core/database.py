@@ -40,6 +40,10 @@ class Idea:
     author: str = "AI-Generated"
     web_summary: str = ""
     web_score: float = 0.5
+    regulatory_urgency: float = 0.0
+    trend_acceleration_factor: float = 0.0
+    market_delta: float = 0.0
+    web_signal: float = 0.5
     
     def __post_init__(self):
         if self.timestamp is None:
@@ -117,6 +121,26 @@ class IdeaDatabase:
         except sqlite3.OperationalError:
             pass # Column already exists
 
+        try:
+            cursor.execute("ALTER TABLE ideas ADD COLUMN regulatory_urgency REAL DEFAULT 0.0")
+        except sqlite3.OperationalError:
+            pass # Column already exists
+
+        try:
+            cursor.execute("ALTER TABLE ideas ADD COLUMN trend_acceleration_factor REAL DEFAULT 0.0")
+        except sqlite3.OperationalError:
+            pass # Column already exists
+
+        try:
+            cursor.execute("ALTER TABLE ideas ADD COLUMN market_delta REAL DEFAULT 0.0")
+        except sqlite3.OperationalError:
+            pass # Column already exists
+
+        try:
+            cursor.execute("ALTER TABLE ideas ADD COLUMN web_signal REAL DEFAULT 0.5")
+        except sqlite3.OperationalError:
+            pass # Column already exists
+
         self.conn.commit()
     
     def _generate_hash(self, idea: Idea) -> str:
@@ -162,7 +186,7 @@ class IdeaDatabase:
             idea.hash_signature = self._generate_hash(idea)
             
             cursor.execute("""
-                INSERT INTO ideas VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                INSERT INTO ideas VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """, (
                 idea.idea_id,
                 idea.title,
@@ -180,7 +204,11 @@ class IdeaDatabase:
                 idea.hash_signature,
                 idea.author,
                 idea.web_summary,
-                idea.web_score
+                idea.web_score,
+                idea.regulatory_urgency,
+                idea.trend_acceleration_factor,
+                idea.market_delta,
+                idea.web_signal
             ))
             self.conn.commit()
             
@@ -241,7 +269,11 @@ class IdeaDatabase:
             hash_signature=row[13],
             author=row[14] if len(row) > 14 else "AI-Generated",
             web_summary=row[15] if len(row) > 15 else "",
-            web_score=row[16] if len(row) > 16 else 0.5
+            web_score=row[16] if len(row) > 16 else 0.5,
+            regulatory_urgency=row[17] if len(row) > 17 else 0.0,
+            trend_acceleration_factor=row[18] if len(row) > 18 else 0.0,
+            market_delta=row[19] if len(row) > 19 else 0.0,
+            web_signal=row[20] if len(row) > 20 else 0.5
         )
     
     def get_all_ideas(self) -> List[Idea]:

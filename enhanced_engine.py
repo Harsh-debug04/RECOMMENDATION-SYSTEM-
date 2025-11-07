@@ -17,6 +17,8 @@ from core.web_scraper import WebScraper
 from typing import List, Dict, Any, Optional
 from datetime import datetime
 import numpy as np
+import hashlib
+import json
 
 
 import config
@@ -121,9 +123,11 @@ class EnhancedRecommendationEngine(BaseEngine):
         )
         
         # Add to blockchain for integrity
+        web_hash = hashlib.sha256(json.dumps(web_results).encode()).hexdigest()
         blockchain_hash = self.blockchain.add_block(
             idea_id,
             idea.hash_signature,
+            web_hash=web_hash,
             metadata={
                 "title": title,
                 "author": author,
